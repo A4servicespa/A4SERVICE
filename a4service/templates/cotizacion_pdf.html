@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+body { font-family: Arial, sans-serif; margin: 35px; font-size: 13px; }
+
+/* TITULOS */
+.section-title { 
+    font-size: 16px; 
+    font-weight: bold; 
+    color: #0A4A7A; 
+    margin-top: 25px; 
+}
+
+/* BLOQUE CLIENTE */
+.client-box { 
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    border-radius: 6px; 
+    margin-top: 10px; 
+}
+.client-box p { margin: 3px 0; }
+
+/* TABLA DE PRODUCTOS */
+.table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.table th { background: #0A4A7A; color: white; padding: 8px; text-align: left; }
+.table td { border: 1px solid #ccc; padding: 8px; }
+
+/* TOTALES */
+.total-box { width: 280px; float: right; margin-top: 20px; }
+.total-box table { width: 100%; }
+.total-box td { padding: 6px; }
+
+/* NOTAS */
+.notes { margin-top: 40px; }
+
+/* PIE DE PÁGINA */
+.footer { 
+    margin-top: 50px; 
+    text-align: center; 
+    font-size: 11px; 
+    color: #666; 
+}
+</style>
+</head>
+
+<body>
+
+<!-- ENCABEZADO CON TABLA (LOGO + EMPRESA + COTIZACIÓN) -->
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr>
+
+    <!-- LOGO + EMPRESA UNO AL LADO DEL OTRO -->
+    <td valign="middle" width="60%">
+        <table cellspacing="0" cellpadding="0">
+            <tr>
+                <td valign="middle">
+                    <img src="{{ url_for('static', filename='img/logo.png', _external=True) }}" style="width:180px;">
+                </td>
+
+                <td valign="middle" style="padding-left:15px;">
+                    <p><strong>A4 SERVICE SPA</strong></p>
+                    <p>RUT: 77.472.704-3</p>
+                    <p>Dirección: Calle Río Toltén Nº32, El Melón, Nogales</p>
+                    <p>Teléfonos: +56 9 5424 5660 / +56 9 3881 2474</p>
+                    <p>Correo: A4servicespa@outlook.com</p>
+                </td>
+            </tr>
+        </table>
+    </td>
+
+    <!-- COTIZACIÓN A LA MISMA ALTURA DEL LOGO -->
+    <td valign="middle" width="40%" align="right">
+        <h1 style="margin:0; font-size:26px; color:#0A4A7A;">
+            COTIZACIÓN #{{ cot.number }}
+        </h1>
+        <p><strong>Fecha:</strong> {{ cot.date.strftime('%d-%m-%Y') }}</p>
+        <p><strong>Estado:</strong> {{ cot.status }}</p>
+    </td>
+
+</tr>
+</table>
+
+<!-- DATOS DEL CLIENTE -->
+<h3 class="section-title">Datos del Cliente</h3>
+
+<div class="client-box">
+    <p><strong>{{ cot.client.name }}</strong></p>
+    {% if cot.client.rut %}<p>RUT: {{ cot.client.rut }}</p>{% endif %}
+    {% if cot.client.email %}<p>Correo: {{ cot.client.email }}</p>{% endif %}
+    {% if cot.client.phone %}<p>Teléfono: {{ cot.client.phone }}</p>{% endif %}
+    {% if cot.client.company %}<p>Empresa: {{ cot.client.company }}</p>{% endif %}
+</div>
+
+<!-- DETALLE -->
+<h3 class="section-title">Detalle de Productos</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th style="width: 80px;">Cant.</th>
+            <th style="width: 120px;">Precio</th>
+            <th style="width: 120px;">Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ "%.0f"|format(item.price) }}</td>
+            <td>${{ "%.0f"|format(item.subtotal()) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- TOTALES -->
+<div class="total-box">
+    <table>
+        <tr>
+            <td><strong>Subtotal:</strong></td>
+            <td>${{ "%.0f"|format(cot.subtotal) }}</td>
+        </tr>
+        <tr>
+            <td><strong>IVA (19%):</strong></td>
+            <td>${{ "%.0f"|format(cot.tax) }}</td>
+        </tr>
+        <tr>
+            <td><strong>Total:</strong></td>
+            <td><strong>${{ "%.0f"|format(cot.total) }}</strong></td>
+        </tr>
+    </table>
+</div>
+
+<div style="clear: both;"></div>
+
+<!-- NOTAS -->
+{% if cot.notes %}
+<div class="notes">
+    <h3 class="section-title">Notas / Condiciones</h3>
+    <p>{{ cot.notes }}</p>
+</div>
+{% endif %}
+
+<!-- PIE DE PÁGINA -->
+<div class="footer">
+    Esta cotización es válida por 15 días salvo indicación contraria.  
+    A4 SERVICE SPA — Servicios Gráficos Profesionales.
+</div>
+
+</body>
+</html>

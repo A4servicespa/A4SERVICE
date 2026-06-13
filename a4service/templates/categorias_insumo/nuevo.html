@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Categoría{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">Nueva Categoría</h1>
+
+<div class="card p-4 shadow-sm">
+
+    <form method="POST">
+
+        <div class="mb-3">
+            <label class="form-label">Nombre de la categoría</label>
+            <input type="text" name="nombre" class="form-control" required>
+        </div>
+
+        <button class="btn btn-success">Guardar</button>
+        <a href="{{ url_for('categorias_insumo.lista') }}" class="btn btn-secondary">Volver</a>
+
+    </form>
+
+</div>
+
+{% endblock %}

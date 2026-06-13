@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Categorías de Insumos{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">Categorías de Insumos</h1>
+
+<a href="{{ url_for('categorias_insumo.nuevo') }}" class="btn btn-primary mb-3">
+    + Nueva Categoría
+</a>
+
+<div class="card p-4 shadow-sm">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Insumos Asociados</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for c in categorias %}
+            <tr>
+                <td>{{ c.nombre }}</td>
+
+                <td>
+                    {% if c.insumos %}
+                        <ul class="mb-0">
+                            {% for i in c.insumos %}
+                            <li>
+                                {{ i.nombre }} ({{ i.unidad }}) — 
+                                ${{ "%.0f"|format(i.costo_unitario) }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="text-muted">Sin insumos</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <a href="{{ url_for('categorias_insumo.editar', id=c.id) }}" 
+                       class="btn btn-sm btn-warning">
+                        Editar
+                    </a>
+
+                    <a href="{{ url_for('categorias_insumo.eliminar', id=c.id) }}"
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('¿Eliminar categoría?')">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center text-muted py-4">
+                    No hay categorías registradas.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

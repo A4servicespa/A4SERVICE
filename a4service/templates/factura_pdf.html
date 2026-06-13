@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Factura #{{ factura.id }}</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #333; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #0A4A7A; padding-bottom: 10px; }
+        .empresa h2 { margin: 0; color: #0A4A7A; }
+        .empresa div { font-size: 13px; }
+        .doc-info { text-align: right; font-size: 14px; }
+        h3 { margin-top: 25px; color: #0A4A7A; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { border: 1px solid #ccc; padding: 6px 8px; }
+        th { background: #f0f4f8; color: #0A4A7A; }
+        .totales { margin-top: 20px; width: 40%; float: right; }
+        .totales td { border: none; padding: 4px 0; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="empresa">
+        <h2>A4 SERVICE SPA</h2>
+        <div>RUT: 77.472.704-3</div>
+        <div>Dirección: Calle Río Toltén N°32, El Melón, Nogales</div>
+        <div>Tel: +56 9 5424 5660 — +56 9 3881 2474</div>
+        <div>Email: A4servicespa@outlook.com</div>
+    </div>
+
+    <div class="doc-info">
+        <div><strong>FACTURA</strong></div>
+        <div>N° {{ factura.id }}</div>
+        <div>Fecha: {{ factura.date.strftime('%d-%m-%Y') }}</div>
+        <div>Estado: {{ factura.status }}</div>
+    </div>
+</div>
+
+<h3>Datos del Cliente</h3>
+<div><strong>Nombre:</strong> {{ factura.client.name }}</div>
+{% if factura.client.company %}<div><strong>Empresa:</strong> {{ factura.client.company }}</div>{% endif %}
+{% if factura.client.rut %}<div><strong>RUT:</strong> {{ factura.client.rut }}</div>{% endif %}
+{% if factura.client.email %}<div><strong>Email:</strong> {{ factura.client.email }}</div>{% endif %}
+{% if factura.client.phone %}<div><strong>Teléfono:</strong> {{ factura.client.phone }}</div>{% endif %}
+
+<h3>Detalle</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Producto / Servicio</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ "%.0f"|format(item.price) }}</td>
+            <td>${{ "%.0f"|format(item.subtotal()) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="totales">
+    <table>
+        <tr><td><strong>Subtotal:</strong></td><td>${{ "%.0f"|format(factura.subtotal) }}</td></tr>
+        <tr><td><strong>IVA (19%):</strong></td><td>${{ "%.0f"|format(factura.tax) }}</td></tr>
+        <tr><td><strong>Total:</strong></td><td><strong>${{ "%.0f"|format(factura.total) }}</strong></td></tr>
+    </table>
+</div>
+
+</body>
+</html>

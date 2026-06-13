@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Subir Factura PDF{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">Subir Factura PDF</h1>
+
+<div class="card shadow-sm p-4">
+
+    <form method="POST" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label class="form-label">Tipo</label>
+            <select name="tipo" class="form-control" required>
+                <option value="compra">Compra</option>
+                <option value="venta">Venta</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Proveedor</label>
+            <input type="text" name="proveedor" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Fecha</label>
+            <input type="date" name="fecha" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Total</label>
+            <input type="number" name="total" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Archivo PDF</label>
+            <input type="file" name="archivo" accept="application/pdf" class="form-control" required>
+        </div>
+
+        <button class="btn btn-success">Subir Factura</button>
+        <a href="{{ url_for('facturas_archivo.lista') }}" class="btn btn-secondary">Volver</a>
+
+    </form>
+
+</div>
+
+{% endblock %}

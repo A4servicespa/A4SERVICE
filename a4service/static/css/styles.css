@@ -1,0 +1,107 @@
+/* ===========================
+   ESTILO GLOBAL FUTURISTA
+   =========================== */
+
+body {
+    background: #f4f6f9;
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+/* ===========================
+   LOGIN FUTURISTA
+   =========================== */
+
+.login-body {
+    background: linear-gradient(135deg, #0A4A7A, #0d5c99, #0A4A7A);
+    background-size: 300% 300%;
+    animation: gradientMove 12s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.login-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+.login-card {
+    background: #ffffffee;
+    border-radius: 16px;
+    padding: 35px 30px;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.login-logo {
+    width: 90px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.login-btn {
+    background: #0A4A7A;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 18px;
+    transition: 0.2s;
+}
+
+.login-btn:hover {
+    background: #0d5c99;
+}
+
+/* ===========================
+   TABLAS FUTURISTAS
+   =========================== */
+
+.table-box {
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ===========================
+   BOTONES CORPORATIVOS
+   =========================== */
+
+.btn-a4 {
+    background: #0A4A7A !important;
+    color: white !important;
+    border-radius: 8px;
+    padding: 8px 16px;
+}
+
+.btn-a4:hover {
+    background: #0d5c99 !important;
+}
+
+/* ===========================
+   TARJETAS KPI
+   =========================== */
+
+.kpi-card {
+    background: linear-gradient(135deg, #0A4A7A, #0d5c99);
+    color: white;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-4px);
+}

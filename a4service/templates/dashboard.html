@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard General{% endblock %}
+
+{% block content %}
+
+<style>
+    .dashboard-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: #0A4A7A;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .dashboard-title img {
+        height: 45px;
+    }
+
+    .kpi-card {
+        background: linear-gradient(135deg, #0A4A7A, #0d5c99);
+        color: white;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: transform 0.2s;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .kpi-value {
+        font-size: 34px;
+        font-weight: bold;
+    }
+
+    .chart-box {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .chart-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #0A4A7A;
+        margin-bottom: 15px;
+    }
+</style>
+
+<h1 class="dashboard-title">
+    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+    Dashboard General
+</h1>
+
+<!-- KPIs -->
+<div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="small">Cotizaciones</div>
+            <div class="kpi-value">{{ total_cotizaciones }}</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="small">Facturas</div>
+            <div class="kpi-value">{{ total_facturas }}</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="small">Productos</div>
+            <div class="kpi-value">{{ total_productos }}</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="small">Clientes</div>
+            <div class="kpi-value">{{ total_clientes }}</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Charts -->
+<div class="row g-4">
+
+    <div class="col-md-6">
+        <div class="chart-box">
+            <div class="chart-title">Ventas por Mes</div>
+            <canvas id="ventasMes"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="chart-box">
+            <div class="chart-title">Cotizaciones por Mes</div>
+            <canvas id="cotizacionesMes"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="chart-box">
+            <div class="chart-title">Estados de Cotizaciones</div>
+            <canvas id="estadosCotizaciones"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<!-- Datos JSON seguros -->
+<script id="data-dashboard" type="application/json">
+{{ {
+    "ventasMes": ventas_mes | default({}),
+    "cotizacionesMes": cotizaciones_mes | default({}),
+    "estadosCotizaciones": estados_cotizaciones | default({})
+} | tojson }}
+</script>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const data = JSON.parse(document.getElementById("data-dashboard").textContent);
+
+    const ventasMes = data.ventasMes;
+    const cotizacionesMes = data.cotizacionesMes;
+    const estadosCotizaciones = data.estadosCotizaciones;
+
+    // Ventas por mes
+    new Chart(document.getElementById('ventasMes'), {
+        type: 'bar',
+        data: {
+            labels: ventasMes.labels,
+            datasets: [{
+                label: 'Ventas ($)',
+                data: ventasMes.data,
+                backgroundColor: '#0A4A7A'
+            }]
+        }
+    });
+
+    // Cotizaciones por mes
+    new Chart(document.getElementById('cotizacionesMes'), {
+        type: 'line',
+        data: {
+            labels: cotizacionesMes.labels,
+            datasets: [{
+                label: 'Cotizaciones',
+                data: cotizacionesMes.data,
+                borderColor: '#28a745',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.3
+            }]
+        }
+    });
+
+    // Estados de cotizaciones
+    new Chart(document.getElementById('estadosCotizaciones'), {
+        type: 'pie',
+        data: {
+            labels: estadosCotizaciones.labels,
+            datasets: [{
+                data: estadosCotizaciones.data,
+                backgroundColor: ['#28a745', '#dc3545', '#ffc107']
+            }]
+        }
+    });
+</script>
+{% endblock %}

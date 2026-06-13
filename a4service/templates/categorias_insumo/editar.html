@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Categoría{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">Editar Categoría</h1>
+
+<div class="card p-4 shadow-sm">
+
+    <form method="POST">
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="nombre" class="form-control" value="{{ categoria.nombre }}" required>
+        </div>
+
+        <button class="btn btn-success">Actualizar</button>
+        <a href="{{ url_for('categorias_insumo.lista') }}" class="btn btn-secondary">Volver</a>
+
+    </form>
+
+</div>
+
+{% endblock %}

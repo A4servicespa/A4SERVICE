@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cálculo {{ calc.id }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            margin: 20px;
+        }
+
+        h1, h2, h3 {
+            margin: 0;
+            padding: 0;
+        }
+
+        .titulo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: left;
+        }
+
+        th {
+            background: #eaeaea;
+        }
+
+        .totales {
+            margin-top: 20px;
+            font-size: 15px;
+        }
+
+        .totales strong {
+            font-size: 17px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="titulo">
+        <h2>A4 Service SPA</h2>
+        <h3>Cálculo de Costos por m²</h3>
+        <p><strong>{{ calc.nombre }}</strong></p>
+        <p>Fecha: {{ calc.fecha.strftime("%d-%m-%Y") }}</p>
+    </div>
+
+    <h3>Detalle de Insumos</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Insumo</th>
+                <th>Unidad</th>
+                <th>Cantidad</th>
+                <th>Costo Unitario</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in calc.items %}
+            <tr>
+                <td>{{ item.insumo.nombre }}</td>
+                <td>{{ item.insumo.unidad }}</td>
+                <td>{{ "%.2f"|format(item.cantidad) }}</td>
+                <td>${{ "%.0f"|format(item.insumo.costo_unitario) }}</td>
+                <td>${{ "%.0f"|format(item.subtotal) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="totales">
+        <p><strong>Costo Total:</strong> ${{ "%.0f"|format(calc.costo_total) }}</p>
+        <p><strong>Margen:</strong> {{ calc.margen }}%</p>
+        <p><strong>Precio Final:</strong> ${{ "%.0f"|format(calc.precio_final) }}</p>
+    </div>
+
+</body>
+</html>

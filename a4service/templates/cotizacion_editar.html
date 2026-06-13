@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Editar Cotización #{{ cot.number }}</h2>
+
+<form method="POST">
+
+    <div class="mb-3">
+        <label>Cliente</label>
+        <select name="client_id" class="form-control" required>
+            {% for c in clientes %}
+                <option value="{{ c.id }}" {% if c.id == cot.client_id %}selected{% endif %}>
+                    {{ c.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <h4>Productos</h4>
+
+    <table class="table table-bordered" id="tabla-productos">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cant.</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>
+                    <select name="product_id[]" class="form-control product-select">
+                        <option value="">Seleccione un producto</option>
+                        {% for p in productos %}
+                            <option value="{{ p.id }}" data-precio="{{ p.price }}"
+                                {% if p.id == item.product_id %}selected{% endif %}>
+                                {{ p.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <td>
+                    <input type="number" name="quantity[]" class="form-control quantity-input"
+                           value="{{ item.quantity }}">
+                </td>
+
+                <td>
+                    <input type="number" name="price[]" class="form-control price-input"
+                           value="{{ item.price }}" step="0.01">
+                </td>
+
+                <td>
+                    <input type="number" name="subtotal[]" class="form-control subtotal-input"
+                           value="{{ item.subtotal() }}" readonly>
+                </td>
+
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm eliminar-fila">X</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="button" id="agregar-fila" class="btn btn-primary btn-sm">Agregar Producto</button>
+
+    <hr>
+
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label>Subtotal Neto</label>
+            <input type="number" id="total_neto" class="form-control" readonly value="{{ cot.subtotal }}">
+        </div>
+
+        <div class="col-md-4">
+            <label>IVA (19%)</label>
+            <input type="number" id="total_iva" class="form-control" readonly value="{{ cot.tax }}">
+        </div>
+
+        <div class="col-md-4">
+            <label>Total</label>
+            <input type="number" id="total_final" class="form-control" readonly value="{{ cot.total }}">
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <label>Notas</label>
+        <textarea name="notes" class="form-control">{{ cot.notes }}</textarea>
+    </div>
+
+    <button class="btn btn-success mt-3">Actualizar Cotización</button>
+
+</form>
+
+<!-- MISMO SCRIPT QUE EN NUEVA COTIZACIÓN -->
+<script>
+// Autocompletar precio al seleccionar producto
+document.addEventListener("change", function(e) {
+    if (e.target.classList.contains("product-select")) {
+
+        let precio = e.target.selectedOptions[0].getAttribute("data-precio");
+
+        let fila = e.target.closest("tr");
+        let inputPrecio = fila.querySelector(".price-input");
+        let inputCantidad = fila.querySelector(".quantity-input");
+        let inputSubtotal = fila.querySelector(".subtotal-input");
+
+        inputPrecio.value = precio;
+
+        if (inputCantidad.value) {
+            inputSubtotal.value = (inputCantidad.value * precio);
+        }
+
+        calcularTotales();
+    }
+});
+
+// Recalcular subtotal cuando cambia cantidad o precio
+document.addEventListener("input", function(e) {
+    if (e.target.classList.contains("quantity-input") ||
+        e.target.classList.contains("price-input")) {
+
+        let fila = e.target.closest("tr");
+        let cantidad = fila.querySelector(".quantity-input").value;
+        let precio = fila.querySelector(".price-input").value;
+        let subtotal = fila.querySelector(".subtotal-input");
+
+        subtotal.value = (cantidad && precio) ? cantidad * precio : "";
+
+        calcularTotales();
+    }
+});
+
+// Calcular totales generales
+function calcularTotales() {
+    let subtotales = document.querySelectorAll(".subtotal-input");
+    let totalNeto = 0;
+
+    subtotales.forEach(s => {
+        if (s.value) totalNeto += parseFloat(s.value);
+    });
+
+    let iva = totalNeto * 0.19;
+    let total = totalNeto + iva;
+
+    document.getElementById("total_neto").value = totalNeto;
+    document.getElementById("total_iva").value = iva;
+    document.getElementById("total_final").value = total;
+}
+
+// Agregar fila
+document.getElementById("agregar-fila").addEventListener("click", function() {
+    let tabla = document.querySelector("#tabla-productos tbody");
+    let nuevaFila = tabla.rows[0].cloneNode(true);
+
+    nuevaFila.querySelectorAll("input").forEach(i => i.value = "");
+    nuevaFila.querySelector("select").value = "";
+
+    tabla.appendChild(nuevaFila);
+});
+
+// Eliminar fila
+document.addEventListener("click", function(e) {
+    if (e.target.classList.contains("eliminar-fila")) {
+        let fila = e.target.closest("tr");
+        let tabla = document.querySelector("#tabla-productos tbody");
+
+        if (tabla.rows.length > 1) {
+            fila.remove();
+            calcularTotales();
+        }
+    }
+});
+</script>
+
+{% endblock %}
