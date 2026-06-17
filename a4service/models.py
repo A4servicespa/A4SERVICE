@@ -168,8 +168,8 @@ class InvoiceFile(db.Model):
 # ============================
 class CategoriaInsumo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(120), nullable=False)
-
+    nombre = db.Column(db.String(120), nullable=False, unique=True)
+    descripcion = db.Column(db.String(255))
 
 # ============================
 # INSUMOS (CORRECTO Y ÚNICO)

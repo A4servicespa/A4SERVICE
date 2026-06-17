@@ -3,24 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <title>Factura #{{ factura.id }}</title>
+
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #333; }
-        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #0A4A7A; padding-bottom: 10px; }
-        .empresa h2 { margin: 0; color: #0A4A7A; }
-        .empresa div { font-size: 13px; }
-        .doc-info { text-align: right; font-size: 14px; }
-        h3 { margin-top: 25px; color: #0A4A7A; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-        th, td { border: 1px solid #ccc; padding: 6px 8px; }
-        th { background: #f0f4f8; color: #0A4A7A; }
-        .totales { margin-top: 20px; width: 40%; float: right; }
-        .totales td { border: none; padding: 4px 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 40px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .header {
+            width: 100%;
+            border-bottom: 3px solid #0A4A7A;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .empresa h2 {
+            margin: 0;
+            color: #0A4A7A;
+            font-size: 22px;
+        }
+
+        .empresa div {
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+        .doc-info {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        h3 {
+            margin-top: 25px;
+            color: #0A4A7A;
+            border-bottom: 1px solid #0A4A7A;
+            padding-bottom: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th {
+            background: #0A4A7A;
+            color: white;
+            padding: 8px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #ccc;
+            padding: 6px 8px;
+            font-size: 13px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .totales {
+            width: 40%;
+            float: right;
+            margin-top: 25px;
+        }
+
+        .totales td {
+            border: none;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+
+        .totales .label {
+            text-align: right;
+            font-weight: bold;
+            width: 60%;
+        }
+
+        .totales .value {
+            text-align: right;
+            width: 40%;
+        }
+
+        .logo {
+            width: 140px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
+
 <body>
 
 <div class="header">
+
     <div class="empresa">
+        {% if logo_path %}
+            <img src="{{ logo_path }}" class="logo">
+        {% endif %}
+
         <h2>A4 SERVICE SPA</h2>
         <div>RUT: 77.472.704-3</div>
         <div>Dirección: Calle Río Toltén N°32, El Melón, Nogales</div>
@@ -29,21 +115,55 @@
     </div>
 
     <div class="doc-info">
-        <div><strong>FACTURA</strong></div>
-        <div>N° {{ factura.id }}</div>
-        <div>Fecha: {{ factura.date.strftime('%d-%m-%Y') }}</div>
-        <div>Estado: {{ factura.status }}</div>
+        <div style="font-size: 20px; font-weight: bold; color: #0A4A7A;">FACTURA</div>
+        <div><strong>N°:</strong> {{ factura.id }}</div>
+        <div><strong>Fecha:</strong> {{ factura.date.strftime('%d-%m-%Y') }}</div>
+        <div><strong>Estado:</strong> {{ factura.status }}</div>
     </div>
+
 </div>
 
-<h3>Datos del Cliente</h3>
-<div><strong>Nombre:</strong> {{ factura.client.name }}</div>
-{% if factura.client.company %}<div><strong>Empresa:</strong> {{ factura.client.company }}</div>{% endif %}
-{% if factura.client.rut %}<div><strong>RUT:</strong> {{ factura.client.rut }}</div>{% endif %}
-{% if factura.client.email %}<div><strong>Email:</strong> {{ factura.client.email }}</div>{% endif %}
-{% if factura.client.phone %}<div><strong>Teléfono:</strong> {{ factura.client.phone }}</div>{% endif %}
 
-<h3>Detalle</h3>
+<h3>Datos del Cliente</h3>
+
+<table>
+    <tr>
+        <td><strong>Nombre:</strong></td>
+        <td>{{ cliente.name }}</td>
+    </tr>
+
+    {% if cliente.company %}
+    <tr>
+        <td><strong>Empresa:</strong></td>
+        <td>{{ cliente.company }}</td>
+    </tr>
+    {% endif %}
+
+    {% if cliente.rut %}
+    <tr>
+        <td><strong>RUT:</strong></td>
+        <td>{{ cliente.rut }}</td>
+    </tr>
+    {% endif %}
+
+    {% if cliente.email %}
+    <tr>
+        <td><strong>Email:</strong></td>
+        <td>{{ cliente.email }}</td>
+    </tr>
+    {% endif %}
+
+    {% if cliente.phone %}
+    <tr>
+        <td><strong>Teléfono:</strong></td>
+        <td>{{ cliente.phone }}</td>
+    </tr>
+    {% endif %}
+</table>
+
+
+<h3>Detalle de Productos / Servicios</h3>
+
 <table>
     <thead>
         <tr>
@@ -53,23 +173,38 @@
             <th>Subtotal</th>
         </tr>
     </thead>
+
     <tbody>
         {% for item in items %}
         <tr>
             <td>{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>${{ "%.0f"|format(item.price) }}</td>
-            <td>${{ "%.0f"|format(item.subtotal()) }}</td>
+            <td class="right">{{ item.quantity }}</td>
+            <td class="right">${{ "%.0f"|format(item.price) }}</td>
+            <td class="right">${{ "%.0f"|format(item.quantity * item.price) }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
+
 <div class="totales">
     <table>
-        <tr><td><strong>Subtotal:</strong></td><td>${{ "%.0f"|format(factura.subtotal) }}</td></tr>
-        <tr><td><strong>IVA (19%):</strong></td><td>${{ "%.0f"|format(factura.tax) }}</td></tr>
-        <tr><td><strong>Total:</strong></td><td><strong>${{ "%.0f"|format(factura.total) }}</strong></td></tr>
+        <tr>
+            <td class="label">Subtotal:</td>
+            <td class="value">${{ "%.0f"|format(factura.subtotal) }}</td>
+        </tr>
+
+        <tr>
+            <td class="label">IVA (19%):</td>
+            <td class="value">${{ "%.0f"|format(factura.tax) }}</td>
+        </tr>
+
+        <tr>
+            <td class="label" style="font-size: 16px;">TOTAL:</td>
+            <td class="value" style="font-size: 16px; font-weight: bold;">
+                ${{ "%.0f"|format(factura.total) }}
+            </td>
+        </tr>
     </table>
 </div>
 

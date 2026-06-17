@@ -1,154 +1,281 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<style>
-body { font-family: Arial, sans-serif; margin: 35px; font-size: 13px; }
+    <meta charset="UTF-8">
+    <title>Cotización #{{ cot.number }}</title>
 
-/* TITULOS */
-.section-title { 
-    font-size: 16px; 
-    font-weight: bold; 
-    color: #0A4A7A; 
-    margin-top: 25px; 
-}
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 35px;
+            color: #333;
+            font-size: 11px;
+        }
 
-/* BLOQUE CLIENTE */
-.client-box { 
-    border: 1px solid #ccc; 
-    padding: 10px; 
-    border-radius: 6px; 
-    margin-top: 10px; 
-}
-.client-box p { margin: 3px 0; }
+        /* ENCABEZADO CORPORATIVO */
+        .header {
+            width: 100%;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #0A4A7A;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-/* TABLA DE PRODUCTOS */
-.table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-.table th { background: #0A4A7A; color: white; padding: 8px; text-align: left; }
-.table td { border: 1px solid #ccc; padding: 8px; }
+        .logo-box {
+            width: 30%;
+        }
 
-/* TOTALES */
-.total-box { width: 280px; float: right; margin-top: 20px; }
-.total-box table { width: 100%; }
-.total-box td { padding: 6px; }
+        .logo {
+            width: 120px;
+        }
 
-/* NOTAS */
-.notes { margin-top: 40px; }
+        .empresa {
+            width: 70%;
+            text-align: right;
+        }
 
-/* PIE DE PÁGINA */
-.footer { 
-    margin-top: 50px; 
-    text-align: center; 
-    font-size: 11px; 
-    color: #666; 
-}
-</style>
+        .empresa h1 {
+            margin: 0;
+            color: #0A4A7A;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .empresa div {
+            font-size: 10px;
+            line-height: 1.2;
+        }
+
+        .doc-info {
+            text-align: right;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+
+        .doc-info .title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0A4A7A;
+            margin-bottom: 4px;
+        }
+
+        /* SECCIONES */
+        h3 {
+            margin-top: 20px;
+            color: #0A4A7A;
+            border-bottom: 1px solid #0A4A7A;
+            padding-bottom: 3px;
+            font-size: 14px;
+        }
+
+        /* TABLAS */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background: #0A4A7A;
+            color: white;
+            padding: 6px;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #ccc;
+            padding: 5px 7px;
+            font-size: 10px;
+        }
+
+        tr:nth-child(even) td {
+            background: #f6f8fa;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        /* TOTALES */
+        .totales {
+            width: 35%;
+            float: right;
+            margin-top: 20px;
+            border: 1px solid #0A4A7A;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        .totales td {
+            border: none;
+            padding: 4px 0;
+            font-size: 11px;
+        }
+
+        .totales .label {
+            text-align: right;
+            font-weight: bold;
+            width: 60%;
+        }
+
+        .totales .value {
+            text-align: right;
+            width: 40%;
+        }
+
+        .totales .total-final {
+            font-size: 13px;
+            font-weight: bold;
+            color: #0A4A7A;
+        }
+
+        /* NOTAS */
+        .notes {
+            margin-top: 30px;
+            font-size: 11px;
+            padding: 10px;
+            background: #f1f7ff;
+            border-left: 3px solid #0A4A7A;
+        }
+
+        /* PIE DE PÁGINA */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- ENCABEZADO CON TABLA (LOGO + EMPRESA + COTIZACIÓN) -->
-<table width="100%" cellspacing="0" cellpadding="0">
-<tr>
+<!-- ENCABEZADO -->
+<div class="header">
 
-    <!-- LOGO + EMPRESA UNO AL LADO DEL OTRO -->
-    <td valign="middle" width="60%">
-        <table cellspacing="0" cellpadding="0">
-            <tr>
-                <td valign="middle">
-                    <img src="{{ url_for('static', filename='img/logo.png', _external=True) }}" style="width:180px;">
-                </td>
+    <div class="logo-box">
+        {% if logo_path %}
+            <img src="{{ logo_path }}" class="logo">
+        {% endif %}
+    </div>
 
-                <td valign="middle" style="padding-left:15px;">
-                    <p><strong>A4 SERVICE SPA</strong></p>
-                    <p>RUT: 77.472.704-3</p>
-                    <p>Dirección: Calle Río Toltén Nº32, El Melón, Nogales</p>
-                    <p>Teléfonos: +56 9 5424 5660 / +56 9 3881 2474</p>
-                    <p>Correo: A4servicespa@outlook.com</p>
-                </td>
-            </tr>
-        </table>
-    </td>
+    <div class="empresa">
+        <h1>A4 SERVICE SPA</h1>
+        <div>RUT: 77.472.704-3</div>
+        <div>Dirección: Calle Río Toltén N°32, El Melón, Nogales</div>
+        <div>Tel: +56 9 5424 5660 — +56 9 3881 2474</div>
+        <div>Email: A4servicespa@outlook.com</div>
 
-    <!-- COTIZACIÓN A LA MISMA ALTURA DEL LOGO -->
-    <td valign="middle" width="40%" align="right">
-        <h1 style="margin:0; font-size:26px; color:#0A4A7A;">
-            COTIZACIÓN #{{ cot.number }}
-        </h1>
-        <p><strong>Fecha:</strong> {{ cot.date.strftime('%d-%m-%Y') }}</p>
-        <p><strong>Estado:</strong> {{ cot.status }}</p>
-    </td>
+        <div class="doc-info">
+            <div class="title">COTIZACIÓN</div>
+            <div><strong>N°:</strong> {{ cot.number }}</div>
+            <div><strong>Fecha:</strong> {{ cot.date.strftime('%d-%m-%Y') }}</div>
+            <div><strong>Estado:</strong> {{ cot.status }}</div>
+        </div>
+    </div>
 
-</tr>
-</table>
-
-<!-- DATOS DEL CLIENTE -->
-<h3 class="section-title">Datos del Cliente</h3>
-
-<div class="client-box">
-    <p><strong>{{ cot.client.name }}</strong></p>
-    {% if cot.client.rut %}<p>RUT: {{ cot.client.rut }}</p>{% endif %}
-    {% if cot.client.email %}<p>Correo: {{ cot.client.email }}</p>{% endif %}
-    {% if cot.client.phone %}<p>Teléfono: {{ cot.client.phone }}</p>{% endif %}
-    {% if cot.client.company %}<p>Empresa: {{ cot.client.company }}</p>{% endif %}
 </div>
 
-<!-- DETALLE -->
-<h3 class="section-title">Detalle de Productos</h3>
+<!-- CLIENTE -->
+<h3>Datos del Cliente</h3>
 
-<table class="table">
+<table>
+    <tr>
+        <td><strong>Nombre:</strong></td>
+        <td>{{ cot.client.name }}</td>
+    </tr>
+
+    {% if cot.client.company %}
+    <tr>
+        <td><strong>Empresa:</strong></td>
+        <td>{{ cot.client.company }}</td>
+    </tr>
+    {% endif %}
+
+    {% if cot.client.rut %}
+    <tr>
+        <td><strong>RUT:</strong></td>
+        <td>{{ cot.client.rut }}</td>
+    </tr>
+    {% endif %}
+
+    {% if cot.client.email %}
+    <tr>
+        <td><strong>Email:</strong></td>
+        <td>{{ cot.client.email }}</td>
+    </tr>
+    {% endif %}
+
+    {% if cot.client.phone %}
+    <tr>
+        <td><strong>Teléfono:</strong></td>
+        <td>{{ cot.client.phone }}</td>
+    </tr>
+    {% endif %}
+</table>
+
+<!-- DETALLE -->
+<h3>Detalle de Productos / Servicios</h3>
+
+<table>
     <thead>
         <tr>
-            <th>Producto</th>
-            <th style="width: 80px;">Cant.</th>
-            <th style="width: 120px;">Precio</th>
-            <th style="width: 120px;">Subtotal</th>
+            <th>Producto / Servicio</th>
+            <th>Cant.</th>
+            <th>Precio Unitario</th>
+            <th>Subtotal</th>
         </tr>
     </thead>
+
     <tbody>
         {% for item in items %}
         <tr>
             <td>{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>${{ "%.0f"|format(item.price) }}</td>
-            <td>${{ "%.0f"|format(item.subtotal()) }}</td>
+            <td class="right">{{ item.quantity }}</td>
+            <td class="right">${{ "%.0f"|format(item.price) }}</td>
+            <td class="right">${{ "%.0f"|format(item.quantity * item.price) }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
 <!-- TOTALES -->
-<div class="total-box">
+<div class="totales">
     <table>
         <tr>
-            <td><strong>Subtotal:</strong></td>
-            <td>${{ "%.0f"|format(cot.subtotal) }}</td>
+            <td class="label">Subtotal:</td>
+            <td class="value">${{ "%.0f"|format(cot.subtotal) }}</td>
         </tr>
+
         <tr>
-            <td><strong>IVA (19%):</strong></td>
-            <td>${{ "%.0f"|format(cot.tax) }}</td>
+            <td class="label">IVA (19%):</td>
+            <td class="value">${{ "%.0f"|format(cot.tax) }}</td>
         </tr>
+
         <tr>
-            <td><strong>Total:</strong></td>
-            <td><strong>${{ "%.0f"|format(cot.total) }}</strong></td>
+            <td class="label total-final">TOTAL:</td>
+            <td class="value total-final">${{ "%.0f"|format(cot.total) }}</td>
         </tr>
     </table>
 </div>
 
-<div style="clear: both;"></div>
-
 <!-- NOTAS -->
 {% if cot.notes %}
 <div class="notes">
-    <h3 class="section-title">Notas / Condiciones</h3>
-    <p>{{ cot.notes }}</p>
+    <strong>Notas:</strong><br>
+    {{ cot.notes }}
 </div>
 {% endif %}
 
 <!-- PIE DE PÁGINA -->
 <div class="footer">
-    Esta cotización es válida por 15 días salvo indicación contraria.  
-    A4 SERVICE SPA — Servicios Gráficos Profesionales.
+    Esta cotización es válida por 10 días.  
+    A4 Service SPA — Servicios Gráficos a la Minería.
 </div>
 
 </body>

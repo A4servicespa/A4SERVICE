@@ -10,7 +10,7 @@
         padding: 30px;
         border-radius: 14px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        max-width: 700px;
+        max-width: 900px;
         margin: auto;
     }
 
@@ -31,8 +31,9 @@
 
 <div class="form-box">
 
-    <form method="post">
+    <form method="POST">
 
+        <!-- CLIENTE -->
         <div class="mb-3">
             <label class="form-label">Cliente *</label>
             <select name="client_id" class="form-select" required>
@@ -43,27 +44,75 @@
             </select>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Producto *</label>
-            <select name="product_id" class="form-select" required>
-                <option value="">Seleccione un producto...</option>
-                {% for p in productos %}
-                <option value="{{ p.id }}">{{ p.name }}</option>
-                {% endfor %}
-            </select>
+        <!-- TABLA DE PRODUCTOS -->
+        <h4 class="mt-4">Productos / Servicios</h4>
+
+        <table class="table table-bordered" id="tabla-productos">
+            <thead class="table-light">
+                <tr>
+                    <th>Producto</th>
+                    <th style="width: 120px;">Cantidad</th>
+                    <th style="width: 150px;">Precio</th>
+                    <th style="width: 150px;">Subtotal</th>
+                    <th style="width: 60px;"></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>
+                        <select name="product_id[]" class="form-select product-select" required>
+                            <option value="">Seleccione...</option>
+                            {% for p in productos %}
+                            <option value="{{ p.id }}" data-precio="{{ p.price }}">{{ p.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <td>
+                        <input type="number" name="quantity[]" class="form-control quantity-input" min="1" value="1" required>
+                    </td>
+
+                    <td>
+                        <input type="number" name="price[]" class="form-control price-input" step="0.01" required>
+                    </td>
+
+                    <td>
+                        <input type="number" class="form-control subtotal-input" readonly>
+                    </td>
+
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm eliminar-fila">X</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" id="agregar-fila" class="btn btn-secondary btn-sm mb-3">
+            + Agregar Producto
+        </button>
+
+        <hr>
+
+        <!-- TOTALES -->
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <label>Subtotal Neto</label>
+                <input type="number" id="total_neto" class="form-control" readonly>
+            </div>
+
+            <div class="col-md-4">
+                <label>IVA (19%)</label>
+                <input type="number" id="total_iva" class="form-control" readonly>
+            </div>
+
+            <div class="col-md-4">
+                <label>Total</label>
+                <input type="number" id="total_final" class="form-control" readonly>
+            </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Cantidad *</label>
-                <input type="number" name="quantity" class="form-control" value="1" min="1" required>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Precio unitario *</label>
-                <input type="number" name="price" class="form-control" required>
-            </div>
-        </div>
-
+        <!-- BOTONES -->
         <div class="d-flex justify-content-between mt-4">
             <a href="{{ url_for('facturas.lista') }}" class="btn btn-secondary">Volver</a>
             <button class="btn btn-a4">Crear Factura</button>
@@ -72,5 +121,79 @@
     </form>
 
 </div>
+
+<!-- SCRIPT -->
+<script>
+// Autocompletar precio al seleccionar producto
+document.addEventListener("change", function(e) {
+    if (e.target.classList.contains("product-select")) {
+        let precio = e.target.selectedOptions[0].getAttribute("data-precio");
+        let fila = e.target.closest("tr");
+
+        fila.querySelector(".price-input").value = precio;
+        fila.querySelector(".subtotal-input").value =
+            fila.querySelector(".quantity-input").value * precio;
+
+        calcularTotales();
+    }
+});
+
+// Recalcular subtotal cuando cambia cantidad o precio
+document.addEventListener("input", function(e) {
+    if (e.target.classList.contains("quantity-input") ||
+        e.target.classList.contains("price-input")) {
+
+        let fila = e.target.closest("tr");
+        let cantidad = fila.querySelector(".quantity-input").value;
+        let precio = fila.querySelector(".price-input").value;
+
+        fila.querySelector(".subtotal-input").value =
+            (cantidad && precio) ? cantidad * precio : "";
+
+        calcularTotales();
+    }
+});
+
+// Calcular totales generales
+function calcularTotales() {
+    let subtotales = document.querySelectorAll(".subtotal-input");
+    let totalNeto = 0;
+
+    subtotales.forEach(s => {
+        if (s.value) totalNeto += parseFloat(s.value);
+    });
+
+    let iva = totalNeto * 0.19;
+    let total = totalNeto + iva;
+
+    document.getElementById("total_neto").value = totalNeto;
+    document.getElementById("total_iva").value = iva;
+    document.getElementById("total_final").value = total;
+}
+
+// Agregar fila
+document.getElementById("agregar-fila").addEventListener("click", function() {
+    let tabla = document.querySelector("#tabla-productos tbody");
+    let nuevaFila = tabla.rows[0].cloneNode(true);
+
+    nuevaFila.querySelectorAll("input").forEach(i => i.value = "");
+    nuevaFila.querySelector("select").value = "";
+
+    tabla.appendChild(nuevaFila);
+});
+
+// Eliminar fila
+document.addEventListener("click", function(e) {
+    if (e.target.classList.contains("eliminar-fila")) {
+        let fila = e.target.closest("tr");
+        let tabla = document.querySelector("#tabla-productos tbody");
+
+        if (tabla.rows.length > 1) {
+            fila.remove();
+            calcularTotales();
+        }
+    }
+});
+</script>
 
 {% endblock %}
