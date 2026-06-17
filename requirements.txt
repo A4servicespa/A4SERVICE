@@ -1,10 +1,10 @@
-Flask==2.3.2
+Flask==3.0.0
 Flask-Login==0.6.3
-Flask-SQLAlchemy==3.0.5
+Flask-SQLAlchemy==2.0.30
 Flask-Migrate==4.0.7
 flask-cors==4.0.0
 Werkzeug==2.3.7
-gunicorn==21.2.0
+gunicorn==22.0.0
 
 # WeasyPrint estable (evita el error de PDF.__init__)
 WeasyPrint==53.3
@@ -17,3 +17,4 @@ Flask-Mail==0.9.1
 cffi==1.16.0
 pydyf==0.8.0
 pandas==2.2.2
+flask-mail==0.10.0
