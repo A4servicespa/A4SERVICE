@@ -209,7 +209,7 @@ def cotizacion_pdf(id):
 
 
 # ============================================================
-# EXPORTAR A EXCEL
+# EXPORTAR A EXCEL (VERSIÓN CORPORATIVA PROFESIONAL)
 # ============================================================
 @cotizaciones_bp.route("/excel/<int:id>")
 def cotizacion_excel(id):
@@ -224,53 +224,82 @@ def cotizacion_excel(id):
     worksheet = workbook.add_worksheet("Cotización")
     writer.sheets["Cotización"] = worksheet
 
+    # FORMATO CORPORATIVO
     bold = workbook.add_format({'bold': True})
-    money = workbook.add_format({'num_format': '$#,##0'})
+    title = workbook.add_format({'bold': True, 'font_size': 14})
+    header = workbook.add_format({'bold': True, 'bg_color': '#D9D9D9', 'border': 1})
+    cell = workbook.add_format({'border': 1})
+    money = workbook.add_format({'num_format': '$#,##0', 'border': 1})
+    separator = workbook.add_format({'bottom': 2})
 
-    worksheet.write("A1", f"Cotización #{cot.number}", bold)
-    worksheet.write("A2", f"Fecha: {cot.date.strftime('%d-%m-%Y')}")
-    worksheet.write("A3", f"Estado: {cot.status}")
+    # Ajuste de columnas
+    worksheet.set_column("A:A", 35)
+    worksheet.set_column("B:D", 15)
 
-    worksheet.write("A5", "Datos del Cliente", bold)
-    worksheet.write("A6", "Nombre:")
-    worksheet.write("B6", cot.client.name)
+    # LOGO
+    logo_path = os.path.join(current_app.static_folder, "img", "logo.png")
+    if os.path.exists(logo_path):
+        worksheet.insert_image("A1", logo_path, {"x_scale": 0.5, "y_scale": 0.5})
 
-    worksheet.write("A7", "Empresa:")
-    worksheet.write("B7", cot.client.company or "")
+    # DATOS DE LA EMPRESA
+    worksheet.write("C1", "A4 SERVICE SPA", title)
+    worksheet.write("C2", "RUT: 77.472.704-3")
+    worksheet.write("C3", "Calle Río Toltén N° 32, Población La Unión")
+    worksheet.write("C4", "El Melón, Nogales")
+    worksheet.write("C5", "Tel: +56 9 5424 5660 / +56 9 3881 2474")
+    worksheet.write("C6", "Email: A4servicespa@outlook.com")
 
-    worksheet.write("A8", "RUT:")
-    worksheet.write("B8", cot.client.rut or "")
+    worksheet.write("A8", "", separator)
 
-    worksheet.write("A9", "Email:")
-    worksheet.write("B9", cot.client.email or "")
+    # ENCABEZADO DE COTIZACIÓN
+    worksheet.write("A10", f"Cotización #{cot.number}", title)
+    worksheet.write("A11", f"Fecha: {cot.date.strftime('%d-%m-%Y')}")
+    worksheet.write("A12", f"Estado: {cot.status}")
 
-    worksheet.write("A10", "Teléfono:")
-    worksheet.write("B10", cot.client.phone or "")
+    # DATOS DEL CLIENTE
+    worksheet.write("A14", "Datos del Cliente", bold)
+    worksheet.write("A15", "Nombre:")
+    worksheet.write("B15", cot.client.name)
 
-    start_row = 12
-    worksheet.write(start_row, 0, "Producto / Servicio", bold)
-    worksheet.write(start_row, 1, "Cantidad", bold)
-    worksheet.write(start_row, 2, "Precio Unitario", bold)
-    worksheet.write(start_row, 3, "Subtotal", bold)
+    worksheet.write("A16", "Empresa:")
+    worksheet.write("B16", cot.client.company or "")
+
+    worksheet.write("A17", "RUT:")
+    worksheet.write("B17", cot.client.rut or "")
+
+    worksheet.write("A18", "Email:")
+    worksheet.write("B18", cot.client.email or "")
+
+    worksheet.write("A19", "Teléfono:")
+    worksheet.write("B19", cot.client.phone or "")
+
+    # TABLA DE ITEMS
+    start_row = 22
+    worksheet.write(start_row, 0, "Producto / Servicio", header)
+    worksheet.write(start_row, 1, "Cantidad", header)
+    worksheet.write(start_row, 2, "Precio Unitario", header)
+    worksheet.write(start_row, 3, "Subtotal", header)
 
     row = start_row + 1
 
     for item in items:
-        worksheet.write(row, 0, item.product.name)
-        worksheet.write(row, 1, item.quantity)
+        worksheet.write(row, 0, item.product.name, cell)
+        worksheet.write(row, 1, item.quantity, cell)
         worksheet.write(row, 2, item.price, money)
         worksheet.write(row, 3, item.quantity * item.price, money)
         row += 1
 
+    # TOTALES
     worksheet.write(row + 1, 2, "Subtotal:", bold)
     worksheet.write(row + 1, 3, cot.subtotal, money)
 
     worksheet.write(row + 2, 2, "IVA (19%):", bold)
     worksheet.write(row + 2, 3, cot.tax, money)
 
-    worksheet.write(row + 3, 2, "TOTAL:", bold)
+    worksheet.write(row + 3, 2, "TOTAL:", title)
     worksheet.write(row + 3, 3, cot.total, money)
 
+    # NOTAS
     if cot.notes:
         worksheet.write(row + 5, 0, "Notas:", bold)
         worksheet.write(row + 6, 0, cot.notes)
