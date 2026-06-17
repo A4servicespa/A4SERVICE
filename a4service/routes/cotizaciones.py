@@ -155,16 +155,25 @@ def editar(id):
 
 
 # ============================================================
-# GENERAR PDF (CORREGIDO Y FUNCIONAL)
+# ⭐ NUEVA RUTA: FACTURAR COTIZACIÓN ⭐
+# ============================================================
+@cotizaciones_bp.route("/facturar/<int:id>")
+def facturar(id):
+    """
+    Ruta placeholder para facturar una cotización.
+    Por ahora solo redirige a editar, pero evita el BuildError.
+    """
+    return redirect(url_for("cotizaciones.editar", id=id))
+
+
+# ============================================================
+# GENERAR PDF
 # ============================================================
 def generar_pdf_cotizacion(cot, items):
-    # Logo como URL válida (WeasyPrint NO acepta rutas locales)
     logo_path = url_for('static', filename='img/logo.png', _external=True)
 
-    # Render del HTML con logo correcto
     html = render_template("cotizacion_pdf.html", cot=cot, items=items, logo_path=logo_path)
 
-    # Carpeta de salida
     es_windows = platform.system() == "Windows"
 
     if es_windows:
@@ -177,7 +186,6 @@ def generar_pdf_cotizacion(cot, items):
 
     output_path = os.path.join(carpeta, f"cotizacion_{cot.id}.pdf")
 
-    # WeasyPrint necesita base_url apuntando a /static
     HTML(string=html, base_url=current_app.static_folder).write_pdf(output_path)
 
     return output_path
@@ -201,7 +209,7 @@ def cotizacion_pdf(id):
 
 
 # ============================================================
-# EXPORTAR A EXCEL (VERSIÓN COMPLETA Y PROFESIONAL)
+# EXPORTAR A EXCEL
 # ============================================================
 @cotizaciones_bp.route("/excel/<int:id>")
 def cotizacion_excel(id):
@@ -216,16 +224,13 @@ def cotizacion_excel(id):
     worksheet = workbook.add_worksheet("Cotización")
     writer.sheets["Cotización"] = worksheet
 
-    # FORMATOS
     bold = workbook.add_format({'bold': True})
     money = workbook.add_format({'num_format': '$#,##0'})
 
-    # ENCABEZADO
     worksheet.write("A1", f"Cotización #{cot.number}", bold)
     worksheet.write("A2", f"Fecha: {cot.date.strftime('%d-%m-%Y')}")
     worksheet.write("A3", f"Estado: {cot.status}")
 
-    # CLIENTE
     worksheet.write("A5", "Datos del Cliente", bold)
     worksheet.write("A6", "Nombre:")
     worksheet.write("B6", cot.client.name)
@@ -242,7 +247,6 @@ def cotizacion_excel(id):
     worksheet.write("A10", "Teléfono:")
     worksheet.write("B10", cot.client.phone or "")
 
-    # TABLA DE ITEMS
     start_row = 12
     worksheet.write(start_row, 0, "Producto / Servicio", bold)
     worksheet.write(start_row, 1, "Cantidad", bold)
@@ -258,7 +262,6 @@ def cotizacion_excel(id):
         worksheet.write(row, 3, item.quantity * item.price, money)
         row += 1
 
-    # TOTALES
     worksheet.write(row + 1, 2, "Subtotal:", bold)
     worksheet.write(row + 1, 3, cot.subtotal, money)
 
@@ -268,7 +271,6 @@ def cotizacion_excel(id):
     worksheet.write(row + 3, 2, "TOTAL:", bold)
     worksheet.write(row + 3, 3, cot.total, money)
 
-    # NOTAS
     if cot.notes:
         worksheet.write(row + 5, 0, "Notas:", bold)
         worksheet.write(row + 6, 0, cot.notes)
