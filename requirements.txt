@@ -3,7 +3,7 @@ Flask-Login==0.6.3
 Flask-SQLAlchemy==3.1.1
 Flask-Migrate==4.0.7
 flask-cors==4.0.0
-Werkzeug==2.3.7
+Werkzeug==3.0.1
 gunicorn==22.0.0
 
 # WeasyPrint estable (evita el error de PDF.__init__)
