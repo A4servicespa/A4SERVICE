@@ -1,3 +1,4 @@
+import os
 from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -24,6 +25,15 @@ def create_app():
     # CARGAR CONFIGURACIÓN DESDE config.py
     # ============================
     app.config.from_object(Config)
+
+    # ============================
+    # FORZAR USO DE POSTGRES (Railway)
+    # ============================
+    # DATABASE_URL debe estar definida como variable en Railway
+    # (en el servicio de tu app, pestaña Variables)
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url:
+        app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
     # ============================
     # CONFIGURACIÓN DE CORREO (OUTLOOK)
