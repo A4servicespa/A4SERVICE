@@ -7,16 +7,18 @@ from a4service import db
 # USUARIO (LOGIN)
 # ============================
 class Usuario(UserMixin, db.Model):
+    __tablename__ = "usuario"
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
 
     def set_password(self, password_plain):
-        self.password = generate_password_hash(password_plain)
+        self.password_hash = generate_password_hash(password_plain)
 
     def check_password(self, password_plain):
-        return check_password_hash(self.password, password_plain)
+        return check_password_hash(self.password_hash, password_plain)
 
     def __repr__(self):
         return f"<Usuario {self.email}>"
@@ -26,6 +28,8 @@ class Usuario(UserMixin, db.Model):
 # CLIENTES
 # ============================
 class Client(db.Model):
+    __tablename__ = "client"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120))
@@ -44,6 +48,8 @@ class Client(db.Model):
 # PRODUCTOS
 # ============================
 class Product(db.Model):
+    __tablename__ = "product"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     price = db.Column(db.Float, nullable=False)
@@ -63,6 +69,8 @@ class Product(db.Model):
 # COTIZACIONES
 # ============================
 class Quotation(db.Model):
+    __tablename__ = "quotation"
+
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.Integer, unique=True)
     client_id = db.Column(db.Integer, db.ForeignKey("client.id"), nullable=False)
@@ -87,6 +95,8 @@ class Quotation(db.Model):
 
 
 class QuotationItem(db.Model):
+    __tablename__ = "quotation_item"
+
     id = db.Column(db.Integer, primary_key=True)
     quotation_id = db.Column(db.Integer, db.ForeignKey("quotation.id"), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
@@ -102,6 +112,8 @@ class QuotationItem(db.Model):
 # FACTURAS
 # ============================
 class Invoice(db.Model):
+    __tablename__ = "invoice"
+
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey("client.id"), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
@@ -123,6 +135,8 @@ class Invoice(db.Model):
 
 
 class InvoiceItem(db.Model):
+    __tablename__ = "invoice_item"
+
     id = db.Column(db.Integer, primary_key=True)
     invoice_id = db.Column(db.Integer, db.ForeignKey("invoice.id"), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
@@ -138,6 +152,8 @@ class InvoiceItem(db.Model):
 # MOVIMIENTOS DE INVENTARIO
 # ============================
 class Movement(db.Model):
+    __tablename__ = "movement"
+
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
 
@@ -155,6 +171,8 @@ class Movement(db.Model):
 # FACTURAS PDF (ARCHIVOS)
 # ============================
 class InvoiceFile(db.Model):
+    __tablename__ = "invoice_file"
+
     id = db.Column(db.Integer, primary_key=True)
     tipo = db.Column(db.String(20))
     fecha = db.Column(db.Date)
@@ -167,14 +185,19 @@ class InvoiceFile(db.Model):
 # CATEGORÍAS DE INSUMOS
 # ============================
 class CategoriaInsumo(db.Model):
+    __tablename__ = "categoria_insumo"
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(120), nullable=False, unique=True)
     descripcion = db.Column(db.String(255))
 
+
 # ============================
-# INSUMOS (CORRECTO Y ÚNICO)
+# INSUMOS
 # ============================
 class Insumo(db.Model):
+    __tablename__ = "insumo"
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(120), nullable=False)
     unidad = db.Column(db.String(50), nullable=False)
@@ -188,18 +211,24 @@ class Insumo(db.Model):
 # CÁLCULOS DE COSTOS
 # ============================
 class Calculo(db.Model):
+    __tablename__ = "calculo"
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(120), nullable=False)
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
     costo_total = db.Column(db.Float, nullable=False)
     margen = db.Column(db.Float, nullable=False)
     precio_final = db.Column(db.Float, nullable=False)
+
     items = db.relationship("CalculoItem", backref="calculo", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Calculo {self.nombre}>"
 
+
 class CalculoItem(db.Model):
+    __tablename__ = "calculo_item"
+
     id = db.Column(db.Integer, primary_key=True)
 
     calculo_id = db.Column(db.Integer, db.ForeignKey('calculo.id'), nullable=False)
