@@ -18,13 +18,13 @@
             padding-bottom: 12px;
             margin-bottom: 20px;
             border-bottom: 3px solid #0A4A7A;
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 25% 50% 25%;
             align-items: center;
         }
 
         .logo-box {
-            width: 30%;
+            text-align: left;
         }
 
         .logo {
@@ -32,8 +32,7 @@
         }
 
         .empresa {
-            width: 70%;
-            text-align: right;
+            text-align: center;
         }
 
         .empresa h1 {
@@ -51,7 +50,6 @@
         .doc-info {
             text-align: right;
             font-size: 11px;
-            margin-top: 10px;
         }
 
         .doc-info .title {
@@ -158,25 +156,28 @@
 <!-- ENCABEZADO -->
 <div class="header">
 
+    <!-- LOGO IZQUIERDA -->
     <div class="logo-box">
         {% if logo_path %}
             <img src="{{ logo_path }}" class="logo">
         {% endif %}
     </div>
 
+    <!-- DATOS EMPRESA CENTRO -->
     <div class="empresa">
         <h1>A4 SERVICE SPA</h1>
         <div>RUT: 77.472.704-3</div>
         <div>Dirección: Calle Río Toltén N°32, El Melón, Nogales</div>
         <div>Tel: +56 9 5424 5660 — +56 9 3881 2474</div>
         <div>Email: A4servicespa@outlook.com</div>
+    </div>
 
-        <div class="doc-info">
-            <div class="title">COTIZACIÓN</div>
-            <div><strong>N°:</strong> {{ cot.number }}</div>
-            <div><strong>Fecha:</strong> {{ cot.date.strftime('%d-%m-%Y') }}</div>
-            <div><strong>Estado:</strong> {{ cot.status }}</div>
-        </div>
+    <!-- N° COTIZACIÓN DERECHA -->
+    <div class="doc-info">
+        <div class="title">COTIZACIÓN</div>
+        <div><strong>N°:</strong> {{ cot.number }}</div>
+        <div><strong>Fecha:</strong> {{ cot.date.strftime('%d-%m-%Y') }}</div>
+        <div><strong>Estado:</strong> {{ cot.status }}</div>
     </div>
 
 </div>
