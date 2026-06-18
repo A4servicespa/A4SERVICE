@@ -166,15 +166,16 @@ def facturar(id):
 # GENERAR PDF (CORREGIDO)
 # ============================================================
 def generar_pdf_cotizacion(cot, items):
+    # Ruta absoluta local del logo (WeasyPrint la puede leer sin red)
+    logo_path = os.path.join(current_app.static_folder, "img", "logo.png")
 
-    # URL ABSOLUTA DEL LOGO (WeasyPrint sí la soporta)
-    logo_path = url_for('static', filename='img/logo.png', _external=True)
-
-    # Render HTML con logo_path
-    html = render_template("cotizacion_pdf.html", cot=cot, items=items, logo_path=logo_path)
-
-    # BASE_URL debe ser la URL pública, no la carpeta local
-    base_url = request.url_root.rstrip('/')
+    # Render HTML con ruta local
+    html = render_template(
+        "cotizacion_pdf.html",
+        cot=cot,
+        items=items,
+        logo_path=logo_path
+    )
 
     # Carpeta de salida
     es_windows = platform.system() == "Windows"
@@ -188,10 +189,11 @@ def generar_pdf_cotizacion(cot, items):
 
     output_path = os.path.join(carpeta, f"cotizacion_{cot.id}.pdf")
 
-    # Generar PDF con base_url correcto
-    HTML(string=html, base_url=base_url).write_pdf(output_path)
+    # Generar PDF usando rutas locales
+    HTML(string=html, base_url=current_app.static_folder).write_pdf(output_path)
 
     return output_path
+
 
 
 # ============================================================
