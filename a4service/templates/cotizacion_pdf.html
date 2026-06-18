@@ -50,6 +50,7 @@
         .doc-info {
             text-align: right;
             font-size: 11px;
+            margin: 0;
         }
 
         .doc-info .title {
@@ -158,9 +159,7 @@
 
     <!-- LOGO IZQUIERDA -->
     <div class="logo-box">
-        {% if logo_path %}
-            <img src="{{ logo_path }}" class="logo">
-        {% endif %}
+        <img src="{{ logo_path }}" class="logo">
     </div>
 
     <!-- DATOS EMPRESA CENTRO -->
