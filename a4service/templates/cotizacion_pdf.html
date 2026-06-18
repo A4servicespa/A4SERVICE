@@ -12,56 +12,6 @@
             font-size: 11px;
         }
 
-        /* ENCABEZADO CORPORATIVO */
-        .header {
-            width: 100%;
-            padding-bottom: 12px;
-            margin-bottom: 25px;
-            border-bottom: 3px solid #0A4A7A;
-            display: grid;
-            grid-template-columns: 25% 50% 25%;
-            align-items: center;
-        }
-
-        .logo-box {
-            text-align: left;
-        }
-
-        .logo {
-            width: 120px;
-        }
-
-        .empresa {
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        .empresa h1 {
-            margin: 0;
-            color: #0A4A7A;
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
-        .empresa div {
-            font-size: 10px;
-            margin-top: 2px;
-        }
-
-        .doc-info {
-            text-align: right;
-            font-size: 11px;
-            line-height: 1.4;
-        }
-
-        .doc-info .title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #0A4A7A;
-            margin-bottom: 6px;
-        }
-
         /* SECCIONES */
         h3 {
             margin-top: 25px;
@@ -156,34 +106,41 @@
 
 <body>
 
-<!-- ENCABEZADO -->
-<div class="header">
+<!-- ========================================================= -->
+<!-- ENCABEZADO CORPORATIVO (TABLA COMPATIBLE WEASYPRINT) -->
+<!-- ========================================================= -->
+<table style="width:100%; border-bottom:3px solid #0A4A7A; margin-bottom:25px;">
+    <tr>
 
-    <!-- LOGO IZQUIERDA -->
-    <div class="logo-box">
-        <img src="file://{{ logo_path }}" class="logo">
-    </div>
+        <!-- LOGO -->
+        <td style="width:25%; text-align:left; vertical-align:top;">
+            <img src="file://{{ logo_path }}" style="width:120px;">
+        </td>
 
-    <!-- DATOS EMPRESA CENTRO -->
-    <div class="empresa">
-        <h1>A4 SERVICE SPA</h1>
-        <div>RUT: 77.472.704-3</div>
-        <div>Dirección: Calle Río Toltén N°32, El Melón, Nogales</div>
-        <div>Tel: +56 9 5424 5660 — +56 9 3881 2474</div>
-        <div>Email: A4servicespa@outlook.com</div>
-    </div>
+        <!-- DATOS EMPRESA -->
+        <td style="width:50%; text-align:center; vertical-align:top; line-height:1.3;">
+            <div style="font-size:22px; font-weight:800; color:#0A4A7A;">A4 SERVICE SPA</div>
+            <div style="font-size:10px;">RUT: 77.472.704-3</div>
+            <div style="font-size:10px;">Dirección: Calle Río Toltén N°32, El Melón, Nogales</div>
+            <div style="font-size:10px;">Tel: +56 9 5424 5660 — +56 9 3881 2474</div>
+            <div style="font-size:10px;">Email: A4servicespa@outlook.com</div>
+        </td>
 
-    <!-- N° COTIZACIÓN DERECHA -->
-    <div class="doc-info">
-        <div class="title">COTIZACIÓN</div>
-        <div><strong>N°:</strong> {{ cot.number }}</div>
-        <div><strong>Fecha:</strong> {{ cot.date.strftime('%d-%m-%Y') }}</div>
-        <div><strong>Estado:</strong> {{ cot.status }}</div>
-    </div>
+        <!-- INFO COTIZACIÓN -->
+        <td style="width:25%; text-align:right; vertical-align:top; line-height:1.4;">
+            <div style="font-size:16px; font-weight:bold; color:#0A4A7A;">COTIZACIÓN</div>
+            <div><strong>N°:</strong> {{ cot.number }}</div>
+            <div><strong>Fecha:</strong> {{ cot.date.strftime('%d-%m-%Y') }}</div>
+            <div><strong>Estado:</strong> {{ cot.status }}</div>
+        </td>
 
-</div>
+    </tr>
+</table>
 
+
+<!-- ========================================================= -->
 <!-- CLIENTE -->
+<!-- ========================================================= -->
 <h3>Datos del Cliente</h3>
 
 <table>
@@ -221,7 +178,10 @@
     {% endif %}
 </table>
 
+
+<!-- ========================================================= -->
 <!-- DETALLE -->
+<!-- ========================================================= -->
 <h3>Detalle de Productos / Servicios</h3>
 
 <table>
@@ -246,7 +206,10 @@
     </tbody>
 </table>
 
+
+<!-- ========================================================= -->
 <!-- TOTALES -->
+<!-- ========================================================= -->
 <div class="totales">
     <table>
         <tr>
@@ -266,7 +229,10 @@
     </table>
 </div>
 
+
+<!-- ========================================================= -->
 <!-- NOTAS -->
+<!-- ========================================================= -->
 {% if cot.notes %}
 <div class="notes">
     <strong>Notas:</strong><br>
@@ -274,7 +240,10 @@
 </div>
 {% endif %}
 
+
+<!-- ========================================================= -->
 <!-- PIE DE PÁGINA -->
+<!-- ========================================================= -->
 <div class="footer">
     Esta cotización es válida por 10 días.  
     A4 Service SPA — Servicios Gráficos a la Minería.
