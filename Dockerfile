@@ -32,6 +32,7 @@ COPY . .
 # Exponer puerto para Railway
 EXPOSE 8080
 
+
 # ============================
 # Comando de inicio (Gunicorn)
 # ============================
