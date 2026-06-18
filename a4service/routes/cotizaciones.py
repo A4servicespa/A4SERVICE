@@ -155,7 +155,7 @@ def editar(id):
 
 
 # ============================================================
-# ⭐ FACTURAR COTIZACIÓN (placeholder)
+# FACTURAR COTIZACIÓN (placeholder)
 # ============================================================
 @cotizaciones_bp.route("/facturar/<int:id>")
 def facturar(id):
@@ -166,10 +166,10 @@ def facturar(id):
 # GENERAR PDF (CORREGIDO)
 # ============================================================
 def generar_pdf_cotizacion(cot, items):
-    # Ruta absoluta local del logo (WeasyPrint la puede leer sin red)
+    # Ruta absoluta local del logo
     logo_path = os.path.join(current_app.static_folder, "img", "logo.png")
 
-    # Render HTML con ruta local
+    # Render HTML
     html = render_template(
         "cotizacion_pdf.html",
         cot=cot,
@@ -189,11 +189,10 @@ def generar_pdf_cotizacion(cot, items):
 
     output_path = os.path.join(carpeta, f"cotizacion_{cot.id}.pdf")
 
-    # Generar PDF usando rutas locales
+    # Generar PDF
     HTML(string=html, base_url=current_app.static_folder).write_pdf(output_path)
 
     return output_path
-
 
 
 # ============================================================
