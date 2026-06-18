@@ -155,27 +155,29 @@ def editar(id):
 
 
 # ============================================================
-# ⭐ NUEVA RUTA: FACTURAR COTIZACIÓN ⭐
+# ⭐ FACTURAR COTIZACIÓN (placeholder)
 # ============================================================
 @cotizaciones_bp.route("/facturar/<int:id>")
 def facturar(id):
-    """
-    Ruta placeholder para facturar una cotización.
-    Por ahora solo redirige a editar, pero evita el BuildError.
-    """
     return redirect(url_for("cotizaciones.editar", id=id))
 
 
 # ============================================================
-# GENERAR PDF
+# GENERAR PDF (CORREGIDO)
 # ============================================================
 def generar_pdf_cotizacion(cot, items):
+
+    # URL ABSOLUTA DEL LOGO (WeasyPrint sí la soporta)
     logo_path = url_for('static', filename='img/logo.png', _external=True)
 
+    # Render HTML con logo_path
     html = render_template("cotizacion_pdf.html", cot=cot, items=items, logo_path=logo_path)
 
-    es_windows = platform.system() == "Windows"
+    # BASE_URL debe ser la URL pública, no la carpeta local
+    base_url = request.url_root.rstrip('/')
 
+    # Carpeta de salida
+    es_windows = platform.system() == "Windows"
     if es_windows:
         carpeta = os.path.join(current_app.root_path, "static", "uploads", "facturas")
     else:
@@ -186,7 +188,8 @@ def generar_pdf_cotizacion(cot, items):
 
     output_path = os.path.join(carpeta, f"cotizacion_{cot.id}.pdf")
 
-    HTML(string=html, base_url=current_app.static_folder).write_pdf(output_path)
+    # Generar PDF con base_url correcto
+    HTML(string=html, base_url=base_url).write_pdf(output_path)
 
     return output_path
 
@@ -209,7 +212,7 @@ def cotizacion_pdf(id):
 
 
 # ============================================================
-# EXPORTAR A EXCEL (VERSIÓN CORPORATIVA PROFESIONAL)
+# EXPORTAR A EXCEL (CORPORATIVO)
 # ============================================================
 @cotizaciones_bp.route("/excel/<int:id>")
 def cotizacion_excel(id):
