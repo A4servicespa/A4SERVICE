@@ -63,6 +63,39 @@
         .content {
             padding: 25px;
         }
+
+        /* BOTÓN FLOTANTE ANIMADO */
+        #calc-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: #4a6cf7;
+            color: white;
+            border-radius: 50%;
+            border: none;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            z-index: 9999;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            animation: pulse 2s infinite;
+        }
+
+        #calc-btn:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 
@@ -162,6 +195,239 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 {% block scripts %}{% endblock %}
+
+<!-- ============================================================
+     BOTÓN FLOTANTE DE CALCULADORA
+============================================================ -->
+<button id="calc-btn" data-bs-toggle="modal" data-bs-target="#calcModal">
+    🧮
+</button>
+
+<!-- ============================================================
+     MODAL DE CALCULADORA
+============================================================ -->
+<div class="modal fade" id="calcModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg">
+
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Calculadora</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- TABS -->
+        <ul class="nav nav-tabs mb-3" id="calcTabs">
+          <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-basica">Básica</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-area">m² / m³</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-comercial">Comercial</button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+
+          <!-- ============================================================
+               TAB 1: CALCULADORA BÁSICA
+          ============================================================ -->
+          <div class="tab-pane fade show active" id="tab-basica">
+            <div class="card p-3">
+              <input id="calc-display" class="form-control form-control-lg mb-3 text-end" readonly>
+
+              <button class="btn btn-outline-primary w-100 mb-3" id="copy-basic">
+                  Copiar resultado
+              </button>
+
+              <div class="row g-2">
+                {% set keys = [
+                  ['7','8','9','/'],
+                  ['4','5','6','*'],
+                  ['1','2','3','-'],
+                  ['0','.','=','+']
+                ] %}
+                {% for row in keys %}
+                <div class="col-12 d-flex gap-2">
+                  {% for key in row %}
+                  <button class="btn btn-dark flex-fill calc-key" data-key="{{ key }}">{{ key }}</button>
+                  {% endfor %}
+                </div>
+                {% endfor %}
+              </div>
+
+              <button class="btn btn-danger w-100 mt-3" id="calc-clear">Limpiar</button>
+            </div>
+          </div>
+
+          <!-- ============================================================
+               TAB 2: CÁLCULO DE ÁREAS
+          ============================================================ -->
+          <div class="tab-pane fade" id="tab-area">
+            <div class="card p-3">
+
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label>Ancho (m)</label>
+                  <input id="area-ancho" type="number" step="0.01" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                  <label>Alto (m)</label>
+                  <input id="area-alto" type="number" step="0.01" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                  <label>Profundidad (m)</label>
+                  <input id="area-prof" type="number" step="0.01" class="form-control">
+                </div>
+              </div>
+
+              <div class="alert alert-info mt-3">
+                m²: <strong id="area-m2">0</strong><br>
+                m³: <strong id="area-m3">0</strong><br>
+                Perímetro: <strong id="area-per">0</strong>
+              </div>
+
+              <button class="btn btn-outline-primary w-100 mt-3" id="copy-area">
+                  Copiar resultados de área
+              </button>
+
+            </div>
+          </div>
+
+          <!-- ============================================================
+               TAB 3: CÁLCULO COMERCIAL
+          ============================================================ -->
+          <div class="tab-pane fade" id="tab-comercial">
+            <div class="card p-3">
+
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label>Costo Neto</label>
+                  <input id="com-costo" type="number" step="0.01" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                  <label>Margen (%)</label>
+                  <input id="com-margen" type="number" step="0.01" class="form-control" value="30">
+                </div>
+
+                <div class="col-md-4">
+                  <label>Descuento (%)</label>
+                  <input id="com-desc" type="number" step="0.01" class="form-control" value="0">
+                </div>
+              </div>
+
+              <div class="alert alert-info mt-3">
+                Precio Final: <strong id="com-final">0</strong><br>
+                Precio con IVA: <strong id="com-iva">0</strong><br>
+                Rentabilidad: <strong id="com-rent">0</strong>
+              </div>
+
+              <button class="btn btn-outline-primary w-100 mt-3" id="copy-com">
+                  Copiar resultados comerciales
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCRIPT DE LA CALCULADORA
+============================================================ -->
+<script>
+// ------------------ CALCULADORA BÁSICA ------------------
+let display = document.getElementById("calc-display");
+
+document.querySelectorAll(".calc-key").forEach(btn => {
+    btn.onclick = () => {
+        const key = btn.dataset.key;
+        if (key === "=") {
+            try { display.value = eval(display.value); }
+            catch { display.value = "Error"; }
+        } else {
+            display.value += key;
+        }
+    };
+});
+
+document.getElementById("calc-clear").onclick = () => display.value = "";
+
+// Copiar resultado básico
+document.getElementById("copy-basic").onclick = () => {
+    navigator.clipboard.writeText(display.value || "0");
+    alert("Resultado copiado: " + (display.value || "0"));
+};
+
+// ------------------ ÁREAS ------------------
+function calcAreas() {
+    let a = parseFloat(document.getElementById("area-ancho").value) || 0;
+    let b = parseFloat(document.getElementById("area-alto").value) || 0;
+    let c = parseFloat(document.getElementById("area-prof").value) || 0;
+
+    document.getElementById("area-m2").innerText = (a * b).toFixed(2);
+    document.getElementById("area-m3").innerText = (a * b * c).toFixed(2);
+    document.getElementById("area-per").innerText = (2*(a+b)).toFixed(2);
+}
+
+["area-ancho","area-alto","area-prof"].forEach(id => {
+    document.getElementById(id).addEventListener("input", calcAreas);
+});
+
+// Copiar resultados de área
+document.getElementById("copy-area").onclick = () => {
+    let texto =
+        "m²: " + document.getElementById("area-m2").innerText + "\n" +
+        "m³: " + document.getElementById("area-m3").innerText + "\n" +
+        "Perímetro: " + document.getElementById("area-per").innerText;
+
+    navigator.clipboard.writeText(texto);
+    alert("Resultados de área copiados");
+};
+
+// ------------------ COMERCIAL ------------------
+function calcCom() {
+    let costo = parseFloat(document.getElementById("com-costo").value) || 0;
+    let margen = parseFloat(document.getElementById("com-margen").value) || 0;
+    let desc = parseFloat(document.getElementById("com-desc").value) || 0;
+
+    let final = costo * (1 + margen/100);
+    final = final * (1 - desc/100);
+
+    let iva = final * 1.19;
+    let rent = final - costo;
+
+    document.getElementById("com-final").innerText = final.toFixed(0);
+    document.getElementById("com-iva").innerText = iva.toFixed(0);
+    document.getElementById("com-rent").innerText = rent.toFixed(0);
+}
+
+["com-costo","com-margen","com-desc"].forEach(id => {
+    document.getElementById(id).addEventListener("input", calcCom);
+});
+
+// Copiar resultados comerciales
+document.getElementById("copy-com").onclick = () => {
+    let texto =
+        "Precio Final: " + document.getElementById("com-final").innerText + "\n" +
+        "Precio con IVA: " + document.getElementById("com-iva").innerText + "\n" +
+        "Rentabilidad: " + document.getElementById("com-rent").innerText;
+
+    navigator.clipboard.writeText(texto);
+    alert("Resultados comerciales copiados");
+};
+</script>
 
 </body>
 </html>
