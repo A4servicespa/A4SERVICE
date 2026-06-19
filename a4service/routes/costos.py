@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response
 from flask_login import login_required
-from a4service.models import db, Insumo, Calculo, CalculoItem, CategoriaInsumo
+from a4service.models import (
+    db, Insumo, Calculo, CalculoItem, CategoriaInsumo,
+    ProductoCalculado, ProductoCalculadoItem
+)
 from datetime import datetime
 from weasyprint import HTML
 
@@ -14,11 +17,12 @@ costos_bp = Blueprint("costos", __name__, url_prefix="/costos")
 @login_required
 def lista():
     calculos = Calculo.query.order_by(Calculo.id.desc()).all()
-    return render_template("costos/lista.html", calculos=calculos)
+    productos = ProductoCalculado.query.order_by(ProductoCalculado.id.desc()).all()
+    return render_template("costos/lista.html", calculos=calculos, productos=productos)
 
 
 # ============================
-# NUEVO CÁLCULO
+# NUEVO CÁLCULO (EXISTENTE)
 # ============================
 @costos_bp.route("/nuevo", methods=["GET", "POST"])
 @login_required
@@ -80,6 +84,69 @@ def nuevo():
 
 
 # ============================
+# NUEVO PRODUCTO CALCULADO POR M²
+# ============================
+@costos_bp.route("/producto/nuevo", methods=["GET", "POST"])
+@login_required
+def producto_nuevo():
+    insumos = Insumo.query.order_by(Insumo.nombre.asc()).all()
+
+    if request.method == "POST":
+        nombre = request.form["nombre"]
+        margen = float(request.form["margen"])
+
+        costo_neto = 0
+        items = []
+
+        for insumo in insumos:
+            campo = f"m2_{insumo.id}"
+            cantidad_str = request.form.get(campo, "0")
+
+            try:
+                cantidad_m2 = float(cantidad_str) if cantidad_str else 0
+            except ValueError:
+                cantidad_m2 = 0
+
+            if cantidad_m2 > 0:
+                costo_total = cantidad_m2 * insumo.costo_unitario
+                costo_neto += costo_total
+
+                items.append(
+                    ProductoCalculadoItem(
+                        insumo_id=insumo.id,
+                        cantidad_m2=cantidad_m2,
+                        costo_total=costo_total
+                    )
+                )
+
+        precio_final = costo_neto * (1 + margen / 100)
+        precio_con_iva = precio_final * 1.19
+
+        producto = ProductoCalculado(
+            nombre=nombre,
+            costo_neto=costo_neto,
+            margen=margen,
+            precio_final=precio_final,
+            precio_con_iva=precio_con_iva,
+            fecha=datetime.utcnow()
+        )
+
+        db.session.add(producto)
+        db.session.flush()
+
+        for item in items:
+            item.producto_id = producto.id
+            db.session.add(item)
+
+        db.session.commit()
+
+        flash("Producto calculado guardado correctamente", "success")
+        return redirect(url_for("costos.lista"))
+
+    return render_template("costos/producto_nuevo.html", insumos=insumos)
+
+
+# ============================
 # ELIMINAR CÁLCULO
 # ============================
 @costos_bp.route("/eliminar/<int:id>")
@@ -89,6 +156,19 @@ def eliminar(id):
     db.session.delete(calc)
     db.session.commit()
     flash("Cálculo eliminado correctamente", "success")
+    return redirect(url_for("costos.lista"))
+
+
+# ============================
+# ELIMINAR PRODUCTO CALCULADO
+# ============================
+@costos_bp.route("/producto/eliminar/<int:id>")
+@login_required
+def producto_eliminar(id):
+    prod = ProductoCalculado.query.get_or_404(id)
+    db.session.delete(prod)
+    db.session.commit()
+    flash("Producto calculado eliminado correctamente", "success")
     return redirect(url_for("costos.lista"))
 
 

@@ -239,3 +239,43 @@ class CalculoItem(db.Model):
     subtotal = db.Column(db.Float, nullable=False)
 
     insumo = db.relationship("Insumo")
+
+
+# ============================================================
+# NUEVO MÓDULO: PRODUCTO CALCULADO POR M²
+# ============================================================
+class ProductoCalculado(db.Model):
+    __tablename__ = "producto_calculado"
+
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(120), nullable=False)
+
+    costo_neto = db.Column(db.Float, nullable=False)
+    margen = db.Column(db.Float, nullable=False)
+    precio_final = db.Column(db.Float, nullable=False)
+    precio_con_iva = db.Column(db.Float, nullable=False)
+
+    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+
+    items = db.relationship(
+        "ProductoCalculadoItem",
+        backref="producto",
+        cascade="all, delete-orphan"
+    )
+
+    def __repr__(self):
+        return f"<ProductoCalculado {self.nombre}>"
+
+
+class ProductoCalculadoItem(db.Model):
+    __tablename__ = "producto_calculado_item"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    producto_id = db.Column(db.Integer, db.ForeignKey("producto_calculado.id"))
+    insumo_id = db.Column(db.Integer, db.ForeignKey("insumo.id"))
+
+    cantidad_m2 = db.Column(db.Float, nullable=False)
+    costo_total = db.Column(db.Float, nullable=False)
+
+    insumo = db.relationship("Insumo")
