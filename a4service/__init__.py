@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -29,8 +29,6 @@ def create_app():
     # ============================
     # FORZAR USO DE POSTGRES (Railway)
     # ============================
-    # DATABASE_URL debe estar definida como variable en Railway
-    # (en el servicio de tu app, pestaña Variables)
     database_url = os.environ.get("DATABASE_URL")
     if database_url:
         app.config["SQLALCHEMY_DATABASE_URI"] = database_url
@@ -101,6 +99,13 @@ def create_app():
     @app.route("/")
     def home():
         return redirect(url_for("dashboard.dashboard"))
+
+    # ============================
+    # RUTA PARA SERVIR EL MANIFEST.JSON
+    # ============================
+    @app.route('/manifest.json')
+    def manifest():
+        return send_from_directory('static', 'manifest.json')
 
     # ============================
     # CREAR TABLAS SI NO EXISTEN

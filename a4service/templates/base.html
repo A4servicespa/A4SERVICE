@@ -429,5 +429,13 @@ document.getElementById("copy-com").onclick = () => {
 };
 </script>
 
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/static/service-worker.js");
+}
+</script>
+
+<link rel="manifest" href="/static/manifest.json">
+
 </body>
 </html>
