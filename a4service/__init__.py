@@ -103,9 +103,15 @@ def create_app():
     # ============================
     # RUTA PARA SERVIR EL MANIFEST.JSON
     # ============================
+   
     @app.route('/manifest.json')
     def manifest():
-        return send_from_directory('static', 'manifest.json')
+        base_path = os.path.dirname(__file__)  # Ruta real del paquete a4service
+        static_path = os.path.join(base_path, 'static')
+        return send_from_directory(static_path, 'manifest.json')
+
+
+
 
     # ============================
     # CREAR TABLAS SI NO EXISTEN
